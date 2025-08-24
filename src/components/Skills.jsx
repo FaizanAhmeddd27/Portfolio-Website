@@ -23,18 +23,18 @@ const FloatingBubbles = React.memo(() => {
   useEffect(() => {
     const generateBubbles = () => {
       const newBubbles = [];
-      for (let i = 0; i < 10; i++) { // Reduced to 10 bubbles
+      for (let i = 0; i < 8; i++) { // Further reduced to 8 bubbles
         newBubbles.push({
           id: i,
-          size: Math.random() * 30 + 10,
+          size: Math.random() * 25 + 10, // Smaller bubbles: 10-35px
           left: Math.random() * 100,
           top: Math.random() * 100,
-          animationDuration: Math.random() * 12 + 8,
-          opacity: Math.random() * 0.4 + 0.2,
-          delay: Math.random() * 5,
+          animationDuration: Math.random() * 10 + 6, // Shorter duration: 6-16s
+          opacity: Math.random() * 0.3 + 0.2, // 0.2-0.5
+          delay: Math.random() * 3,
           direction: Math.random() > 0.5 ? 1 : -1,
-          floatDistanceX: Math.random() * 80 + 40,
-          floatDistanceY: Math.random() * 150 + 100,
+          floatDistanceX: Math.random() * 60 + 30, // Smaller range: 30-90px
+          floatDistanceY: Math.random() * 120 + 80, // Smaller range: 80-200px
           color: [
             'from-cyan-400/40 to-blue-400/40',
             'from-purple-400/40 to-pink-400/40',
@@ -56,7 +56,7 @@ const FloatingBubbles = React.memo(() => {
           <div
             key={bubble.id}
             className={`absolute rounded-full bg-gradient-to-r ${bubble.color} 
-                       shadow-[0_0_15px_rgba(34,211,238,0.3)] will-change-transform`}
+                       shadow-[0_0_10px_rgba(34,211,238,0.2)] will-change-transform`}
             style={{
               width: `${bubble.size}px`,
               height: `${bubble.size}px`,
@@ -77,14 +77,8 @@ const FloatingBubbles = React.memo(() => {
           0%, 100% {
             transform: translate(0, 0) scale(1);
           }
-          25% {
-            transform: translate(calc(0.5 * var(--float-x)), calc(-0.3 * var(--float-y))) scale(1.1);
-          }
           50% {
-            transform: translate(calc(-0.5 * var(--float-x)), calc(-0.6 * var(--float-y))) scale(0.9);
-          }
-          75% {
-            transform: translate(calc(0.3 * var(--float-x)), calc(-0.9 * var(--float-y))) scale(1.05);
+            transform: translate(var(--float-x), calc(-0.5 * var(--float-y))) scale(0.95);
           }
         }
       `}</style>
@@ -101,93 +95,95 @@ const SkillItem = React.memo(({ skill, index, hoveredSkill, setHoveredSkill }) =
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -100 }}
       transition={{
-        delay: index * 0.08,
-        duration: 0.6,
-        type: "spring",
-        stiffness: 100, 
+        delay: index * 0.06, // Reduced delay for faster load
+        duration: 0.5, // Shorter duration
+        ease: "easeOut",
       }}
       className="relative group cursor-pointer"
       onMouseEnter={() => setHoveredSkill(skill.name)}
       onMouseLeave={() => setHoveredSkill(null)}
     >
       <motion.div
-        className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 h-full overflow-hidden shadow-xl sm:shadow-2xl"
+        className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-xl p-3 sm:p-4 lg:p-6 h-full overflow-hidden shadow-md sm:shadow-lg"
         whileHover={{
-          y: -10,
-          scale: 1.05,
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
+          y: -5, // Reduced hover lift
+          scale: 1.03, // Smaller scale
+          boxShadow: '0 10px 20px rgba(0, 0, 0, 0.3)',
         }}
-        transition={{ duration: 0.4, type: "spring", stiffness: 150 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
       >
         <motion.div
-          className="absolute inset-0 rounded-2xl sm:rounded-3xl"
+          className="absolute inset-0 rounded-xl"
           style={{
             background: `linear-gradient(45deg, ${skill.color.split(' ')[1]}, ${skill.color.split(' ')[3]})`,
             opacity: 0,
           }}
           animate={{
-            opacity: hoveredSkill === skill.name ? 0.3 : 0,
+            opacity: hoveredSkill === skill.name ? 0.2 : 0,
           }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
         />
         
         <motion.div
-          className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-cyan-400/20 to-purple-500/20 rounded-xl sm:rounded-2xl flex items-center justify-center overflow-hidden border border-white/10"
+          className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 bg-gradient-to-br from-cyan-400/20 to-purple-500/20 rounded-lg flex items-center justify-center overflow-hidden border border-white/10"
           animate={{
-            scale: hoveredSkill === skill.name ? 1.2 : 1,
+            scale: hoveredSkill === skill.name ? 1.1 : 1,
           }}
-          transition={{ duration: 0.8, type: "spring" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
         >
           <img
             src={skill.icon}
             alt={skill.name}
-            className="w-full h-full object-contain p-1 sm:p-2"
+            className="w-full h-full object-contain p-1"
             style={{ maxWidth: '100%', maxHeight: '100%' }}
-            loading="lazy" // Lazy-load images
+            loading="lazy"
+            onError={(e) => {
+              e.target.src = 'https://via.placeholder.com/64?text=' + skill.name; // Fallback image
+            }}
           />
         </motion.div>
 
         <motion.h3
-          className="text-lg sm:text-xl lg:text-2xl font-bold text-center mb-3 sm:mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent"
+          className="text-base sm:text-lg lg:text-xl font-bold text-center mb-2 sm:mb-3 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent"
           animate={{
-            scale: hoveredSkill === skill.name ? 1.1 : 1,
+            scale: hoveredSkill === skill.name ? 1.05 : 1,
           }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
         >
           {skill.name}
         </motion.h3>
 
         <motion.p
-          className="text-gray-300 text-center mb-4 sm:mb-6 font-medium text-sm sm:text-base"
+          className="text-gray-300 text-center mb-3 sm:mb-4 font-medium text-xs sm:text-sm"
           animate={{
             color: hoveredSkill === skill.name ? '#22d3ee' : '#d1d5db',
           }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
         >
           {skill.experience}
         </motion.p>
 
         <div className="relative">
-          <div className="flex justify-between items-center mb-2 sm:mb-3">
-            <span className="text-xs sm:text-sm text-gray-400 font-semibold">Proficiency</span>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs text-gray-400 font-semibold">Proficiency</span>
             <motion.span 
-              className="text-xs sm:text-sm font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent"
+              className="text-xs font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent"
               animate={{
-                scale: hoveredSkill === skill.name ? 1.2 : 1,
+                scale: hoveredSkill === skill.name ? 1.1 : 1,
               }}
             >
               {skill.level}%
             </motion.span>
           </div>
           
-          <div className="h-2 sm:h-3 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
+          <div className="h-2 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
             <motion.div
               className={`h-full bg-gradient-to-r ${skill.color} rounded-full relative`}
               initial={{ width: 0 }}
               animate={{ width: `${skill.level}%` }}
               transition={{
-                delay: index * 0.1 + 0.8,
-                duration: 1.2,
+                delay: index * 0.08 + 0.6,
+                duration: 0.8,
                 ease: "easeOut",
               }}
             >
@@ -197,7 +193,7 @@ const SkillItem = React.memo(({ skill, index, hoveredSkill, setHoveredSkill }) =
                   x: ['-100%', '100%'],
                 }}
                 transition={{
-                  duration: 2,
+                  duration: 1.5,
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
@@ -209,24 +205,24 @@ const SkillItem = React.memo(({ skill, index, hoveredSkill, setHoveredSkill }) =
         <AnimatePresence>
           {hoveredSkill === skill.name && (
             <>
-              {[...Array(3)].map((_, i) => (
+              {[...Array(2)].map((_, i) => ( // Reduced to 2 sparkles
                 <motion.div
                   key={i}
-                  className="absolute w-1.5 h-1.5 sm:w-2 sm:h-2 bg-cyan-400 rounded-full"
+                  className="absolute w-1 h-1 bg-cyan-400 rounded-full"
                   initial={{ 
                     opacity: 0, 
                     scale: 0,
-                    x: Math.random() * 150 - 75,
-                    y: Math.random() * 150 - 75,
+                    x: Math.random() * 100 - 50,
+                    y: Math.random() * 100 - 50,
                   }}
                   animate={{ 
-                    opacity: [0, 1, 0], 
-                    scale: [0, 1, 0],
-                    y: -80,
+                    opacity: [0, 0.8, 0], 
+                    scale: [0, 0.8, 0],
+                    y: -50,
                   }}
                   exit={{ opacity: 0 }}
                   transition={{
-                    duration: 1.5,
+                    duration: 1,
                     delay: i * 0.1,
                     repeat: Infinity,
                   }}
@@ -261,7 +257,6 @@ const Skills = () => {
     { name: 'Python', category: 'programming', level: 72, color: 'from-yellow-500 to-blue-600', icon: pythonLogo, experience: '3 months' },
   ];
 
-  // Categories without icons
   const categories = [
     { id: 'all', name: 'All Skills' },
     { id: 'frontend', name: 'Frontend' },
@@ -277,23 +272,23 @@ const Skills = () => {
   }, [selectedCategory]);
 
   return (
-    <section className="relative py-8 px-4 sm:px-6 md:px-12 min-h-screen overflow-hidden">
+    <section id="skills" className="relative py-6 px-2 sm:px-4 md:px-8 lg:px-12 min-h-[600px] overflow-visible">
       <FloatingBubbles />
 
       <div className="relative z-10 max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-10 sm:mb-16"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-8 sm:mb-12"
         >
           <motion.h2
-            className="text-4xl sm:text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 mb-4 sm:mb-6 tracking-tight"
+            className="text-3xl sm:text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 mb-3 sm:mb-4 tracking-tight"
             animate={{
               backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
             }}
             transition={{
-              duration: 5,
+              duration: 4,
               repeat: Infinity,
               ease: "easeInOut",
             }}
@@ -303,67 +298,49 @@ const Skills = () => {
           >
             Skills
           </motion.h2>
-          <motion.div
+          <motion.p
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="relative inline-block"
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="text-sm sm:text-base md:text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed px-2"
           >
-            <motion.p
-              className="text-base sm:text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed px-4"
-              animate={{
-                textShadow: [
-                  '0 0 8px rgba(34, 211, 238, 0.5)',
-                  '0 0 16px rgba(34, 211, 238, 0.3)',
-                  '0 0 8px rgba(34, 211, 238, 0.5)',
-                ],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            >
-              Crafting digital experiences with modern technologies and creative problem-solving
-            </motion.p>
-          </motion.div>
+            Crafting digital experiences with modern technologies and creative problem-solving
+          </motion.p>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-10 sm:mb-16"
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="flex flex-wrap justify-center gap-2 mb-8 sm:mb-12"
         >
           {categories.map((category, index) => (
             <motion.button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`relative px-4 py-2 sm:px-6 sm:py-3 rounded-full font-bold text-sm sm:text-lg transition-all duration-500 overflow-hidden ${
+              className={`relative px-3 py-1 sm:px-4 sm:py-2 rounded-full font-semibold text-xs sm:text-sm transition-all duration-300 ${
                 selectedCategory === category.id
-                  ? 'text-white shadow-2xl shadow-cyan-500/50'
+                  ? 'text-white shadow-md shadow-cyan-500/30'
                   : 'text-gray-300 hover:text-white backdrop-blur-sm border border-white/20'
               }`}
               whileHover={{ 
                 scale: 1.05, 
-                y: -3,
-                boxShadow: '0 15px 30px rgba(34, 211, 238, 0.3)',
+                y: -2,
+                boxShadow: '0 8px 16px rgba(34, 211, 238, 0.2)',
               }}
               whileTap={{ scale: 0.95 }}
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 * index, duration: 0.6 }}
+              transition={{ delay: 0.1 * index, duration: 0.5 }}
             >
               {selectedCategory === category.id && (
                 <motion.div
                   layoutId="activeCategory"
                   className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-full"
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 25 }}
                 />
               )}
-              <span className="relative z-10 flex items-center">
-                {category.name}
-              </span>
+              <span className="relative z-10">{category.name}</span>
             </motion.button>
           ))}
         </motion.div>
@@ -372,9 +349,9 @@ const Skills = () => {
           layout
           initial={{ opacity: 0, x: 100 }}
           whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true, amount: 0.3 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true, amount: 0.2 }}
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
         >
           <AnimatePresence mode="sync">
             {filteredSkills.map((skill, index) => (
@@ -392,16 +369,16 @@ const Skills = () => {
         <motion.div
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 1.5, duration: 1 }}
-          className="mt-12 sm:mt-16 lg:mt-24 text-center"
+          transition={{ delay: 0.8, duration: 0.6 }}
+          className="mt-8 sm:mt-12 lg:mt-16 text-center"
         >
           <motion.h3
-            className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 mb-8 sm:mb-12"
+            className="text-xl sm:text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 mb-6 sm:mb-8"
             animate={{
               backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
             }}
             transition={{
-              duration: 4,
+              duration: 3,
               repeat: Infinity,
               ease: "easeInOut",
             }}
@@ -412,7 +389,7 @@ const Skills = () => {
             My Development Journey
           </motion.h3>
           
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {[
               { label: 'Technologies', value: skills.length, suffix: '+', text: 'Tech' },
               { label: 'Years Experience', value: '1', suffix: '+', text: 'Years' },
@@ -423,44 +400,39 @@ const Skills = () => {
                 key={stat.label}
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.7 + index * 0.15, duration: 0.8 }}
+                transition={{ delay: 0.9 + index * 0.1, duration: 0.5 }}
                 className="relative group"
-                whileHover={{ scale: 1.05, y: -5 }}
+                whileHover={{ scale: 1.03, y: -3 }}
               >
                 <motion.div
-                  className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/20 shadow-xl sm:shadow-2xl"
+                  className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-lg p-3 sm:p-4 border border-white/20 shadow-md sm:shadow-lg"
                   whileHover={{
-                    boxShadow: '0 15px 30px rgba(34, 211, 238, 0.3)',
+                    boxShadow: '0 8px 16px rgba(34, 211, 238, 0.2)',
                   }}
                 >
                   <motion.div
-                    className="text-3xl sm:text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 mb-1 sm:mb-2"
+                    className="text-2xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 mb-1"
                     animate={{ 
-                      scale: [1, 1.05, 1],
-                      textShadow: [
-                        '0 0 15px rgba(34, 211, 238, 0.5)',
-                        '0 0 25px rgba(34, 211, 238, 0.8)',
-                        '0 0 15px rgba(34, 211, 238, 0.5)',
-                      ],
+                      scale: [1, 1.03, 1],
                     }}
-                    transition={{ duration: 3, repeat: Infinity }}
+                    transition={{ duration: 2, repeat: Infinity }}
                   >
                     {stat.value}{stat.suffix}
                   </motion.div>
                   <motion.div
-                    className="text-xl sm:text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-1 sm:mb-2"
+                    className="text-lg sm:text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-1"
                     animate={{ 
-                      scale: [1, 1.05, 1],
+                      scale: [1, 1.03, 1],
                     }}
-                    transition={{ duration: 3, repeat: Infinity }}
+                    transition={{ duration: 2, repeat: Infinity }}
                   >
                     {stat.text}
                   </motion.div>
-                  <p className="text-gray-300 font-semibold text-sm sm:text-base md:text-lg">{stat.label}</p>
+                  <p className="text-gray-300 font-semibold text-xs sm:text-sm md:text-base">{stat.label}</p>
                 </motion.div>
                 
                 <motion.div
-                  className="absolute -inset-1 bg-gradient-to-r from-cyan-400/20 via-blue-500/20 to-purple-500/20 rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-100 blur transition-opacity duration-500 -z-10"
+                  className="absolute -inset-1 bg-gradient-to-r from-cyan-400/20 via-blue-500/20 to-purple-500/20 rounded-lg opacity-0 group-hover:opacity-80 blur transition-opacity duration-300 -z-10"
                 />
               </motion.div>
             ))}
