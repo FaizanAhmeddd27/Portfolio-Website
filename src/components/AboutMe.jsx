@@ -162,12 +162,12 @@ const ImageOrb = () => {
 const Education = () => {
   const timeline = [
     {
-      year: "2025 (Ongoing)",
+      year: "20204-2028",
       title: "Bachelors in Computer Science",
       place: "NED University of Engineering & Technology",
     },
     {
-      year: "2022",
+      year: "2024",
       title: "Intermediate (Pre-Engineering)",
       place: "Completed from Karachi",
     },
