@@ -162,7 +162,7 @@ const ImageOrb = () => {
 const Education = () => {
   const timeline = [
     {
-      year: "20204-2028",
+      year: "2024-2028",
       title: "Bachelors in Computer Science",
       place: "NED University of Engineering & Technology",
     },
