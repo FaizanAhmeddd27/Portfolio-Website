@@ -10,6 +10,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Chatbot from './components/Chatbot';
 
 const App = () => {
   return (
@@ -48,7 +49,10 @@ const App = () => {
       </section>
 
       <Footer />
+      <Chatbot />
       <ToastContainer position="top-right" />
+
+ 
     </div>
   );
 };
