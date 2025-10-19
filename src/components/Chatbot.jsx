@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Send, X } from "lucide-react";
+import { Send, X, MessageCircle } from "lucide-react";
 
 export default function ChatBot() {
   const [messages, setMessages] = useState([]);
@@ -9,11 +9,9 @@ export default function ChatBot() {
   const [isClosing, setIsClosing] = useState(false);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
-
-  // 🔊 Audio reference
   const audioRef = useRef(null);
 
-  const API_KEY = "AIzaSyDnO3k0GrMIpAT84SG87PoaBHv33CZXNTk"; 
+  const API_KEY = "AIzaSyDnO3k0GrMIpAT84SG87PoaBHv33CZXNTk";
   const genAI = new GoogleGenerativeAI(API_KEY);
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -22,18 +20,6 @@ You are Faizan's personal portfolio assistant.
 Faizan Ahmed is a Frontend & MERN Stack Developer from Karachi, Pakistan.
 He builds responsive, modern web apps using React.js, Tailwind CSS, Node.js, Express.js, MongoDB, and Redux.
 He is studying BS Computer Science at NED University (2024–2028).
-
-Portfolio Sections:
-- Home: Intro about Faizan Ahmed, Frontend Developer.
-- About: MERN Stack Developer passionate about clean code and modern solutions.
-- Skills: HTML, CSS, JS, React, Tailwind, Node, Express, MongoDB, TypeScript, C, C++, Python.
-- Projects:
-  1. Blog App (MERN)
-  2. SavourFeast Pizza Website (React + Redux)
-  3. Real-Time Chat App (Socket.io)
-  4. Inventory Management System (C++, QT, SQLite)
-  5. Real Estate Website (React, Tailwind, Framer Motion)
-- Contact: faizannn27@gmail.com | 03122144331
 `;
 
   const predefinedPrompts = [
@@ -44,14 +30,17 @@ Portfolio Sections:
     "Tell me about Faizan's education",
   ];
 
-  // 🔊 Unlock audio on first click (mobile fix)
+  // Unlock audio on first click (mobile fix)
   useEffect(() => {
     const unlockAudio = () => {
       if (audioRef.current) {
-        audioRef.current.play().then(() => {
-          audioRef.current.pause();
-          audioRef.current.currentTime = 0;
-        }).catch(() => {});
+        audioRef.current
+          .play()
+          .then(() => {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+          })
+          .catch(() => {});
       }
       document.removeEventListener("click", unlockAudio);
     };
@@ -66,7 +55,6 @@ Portfolio Sections:
     setInput("");
     setLoading(true);
 
-    // 🔊 Play send sound
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
       audioRef.current.play().catch(() => {});
@@ -101,68 +89,61 @@ Portfolio Sections:
     setTimeout(() => {
       setOpen(false);
       setIsClosing(false);
-    }, 500);
+    }, 400);
   };
 
   return (
     <>
-      {/* 🔊 Audio file */}
-      <audio ref={audioRef} src="/audio.wav" preload="auto" />
+      {/* Audio */}
+      <audio ref={audioRef} src="/audio.wav" preload="auto" playsInline />
 
-      {/* 💬 Floating Chat Button */}
+      {/* Floating Chat Button */}
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed right-4 bottom-12 sm:right-6 sm:bottom-6
+          className="fixed bottom-6 right-6 z-[99999]
           bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-500 hover:to-purple-600
-          text-white px-3 py-2 sm:px-5 sm:py-3 rounded-full shadow-lg
-          flex items-center justify-center gap-2 transition-all duration-300
-          z-[99999] hover:scale-110 text-xs sm:text-sm font-semibold"
+          text-white px-5 py-3 rounded-full shadow-xl flex items-center gap-2 transition-all duration-300
+          hover:scale-110 font-semibold"
         >
-          <Send className="w-5 h-5 sm:w-6 sm:h-6" />
-          <span className="hidden sm:inline">Chat with my AI Assistant</span>
+          <MessageCircle className="w-5 h-5" />
+          <span className="hidden sm:inline">Chat with AI</span>
         </button>
       )}
 
-      {/* 💬 Chat Container */}
+      {/* Chat Container */}
       {(open || isClosing) && (
         <div
-          className={`fixed bottom-0 right-0 sm:bottom-6 sm:right-6 sm:top-auto sm:left-auto
-          w-full sm:w-[380px] md:w-[400px] h-[85%] sm:h-[520px]
+          className={`fixed left-0 bottom-0 sm:right-6 sm:left-auto sm:bottom-10 
+          w-full top-0 md:top-8  sm:w-[380px] md:w-[420px] h-[100vh] sm:h-[550px]
           bg-gradient-to-b from-[#0f172a] via-[#1e1a78] to-[#2d1b69]
-          text-white rounded-t-2xl sm:rounded-2xl shadow-2xl
-          border border-indigo-700/40 z-[9999] flex flex-col overflow-hidden
-          transition-all duration-500 ${isClosing ? 'animate-slideDown' : 'animate-slideUp'}`}
+          text-white rounded-t-2xl sm:rounded-2xl shadow-2xl border border-indigo-700/40
+          flex flex-col overflow-hidden z-[99999] transition-all duration-500
+          ${isClosing ? "animate-slideDown" : "animate-slideUp"}`}
         >
           {/* Header */}
-          <div className="flex justify-between items-center bg-gradient-to-r from-indigo-700 to-purple-700 px-4 py-3 sm:px-5 sm:py-4">
+          <div className="flex justify-between items-center bg-gradient-to-r from-indigo-700 to-purple-700 px-4 py-3">
             <h2 className="font-semibold text-base sm:text-lg">Faizan’s AI Chatbot</h2>
-            <button
-              onClick={handleClose}
-              className="text-gray-300 hover:text-white text-lg sm:text-xl transition-all"
-            >
-              <X className="w-5 h-5 sm:w-6 sm:h-6" />
+            <button onClick={handleClose} className="text-gray-300 hover:text-white">
+              <X className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Chat Messages */}
-          <div className="flex-1 p-3 sm:p-4 overflow-y-auto space-y-3 bg-[#0f172a]/40 backdrop-blur-md custom-scrollbar">
+          {/* Messages */}
+          <div className="flex-1 p-3 overflow-y-auto space-y-3 bg-[#0f172a]/40 backdrop-blur-md custom-scrollbar">
             {messages.length === 0 && (
               <>
-                <div className="text-gray-300 text-sm bg-[#1e1a78]/40 border border-indigo-600/30 rounded-2xl p-3 sm:p-4 animate-fadeIn">
-                  👋 Hi! I'm Faizan’s AI assistant. Ask me about his skills,
-                  experience, or projects!
+                <div className="text-gray-300 text-sm bg-[#1e1a78]/40 border border-indigo-600/30 rounded-2xl p-4 animate-fadeIn">
+                  👋 Hi! I'm Faizan’s AI assistant. Ask me about his skills, experience, or projects!
                 </div>
                 <div className="space-y-2">
                   <p className="text-gray-400 text-xs sm:text-sm">Try these prompts:</p>
                   <div className="grid grid-cols-1 gap-2">
-                    {predefinedPrompts.map((prompt, index) => (
+                    {predefinedPrompts.map((prompt, i) => (
                       <button
-                        key={index}
+                        key={i}
                         onClick={() => handlePromptClick(prompt)}
-                        className="text-left text-gray-200 text-xs sm:text-sm bg-[#1e1a78]/60
-                        border border-indigo-600/30 rounded-lg p-2 hover:bg-indigo-600/80
-                        transition-all duration-200"
+                        className="text-left text-gray-200 text-xs sm:text-sm bg-[#1e1a78]/60 border border-indigo-600/30 rounded-lg p-2 hover:bg-indigo-600/80 transition-all duration-200"
                       >
                         {prompt}
                       </button>
@@ -189,34 +170,26 @@ Portfolio Sections:
               </div>
             ))}
 
-            {loading && (
-              <div className="text-gray-400 text-sm animate-pulse">Thinking...</div>
-            )}
-
+            {loading && <div className="text-gray-400 text-sm animate-pulse">Thinking...</div>}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Box */}
-          <div className="p-3 sm:p-4 flex gap-2 border-t border-indigo-800 bg-[#0f172a]/90 backdrop-blur-md">
+          {/* Input */}
+          <div className="p-3 flex gap-2 border-t border-indigo-800 bg-[#0f172a]/90 backdrop-blur-md">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask something..."
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              className="flex-1 bg-[#1e1a78]/50 p-2.5 sm:p-3 rounded-2xl
-              outline-none text-white text-xs sm:text-sm placeholder-gray-400
-              border border-indigo-700 focus:border-purple-500 transition-all duration-300"
+              placeholder="Ask something..."
+              className="flex-1 bg-[#1e1a78]/50 p-3 rounded-2xl outline-none text-white text-sm placeholder-gray-400 border border-indigo-700 focus:border-purple-500 transition-all"
             />
             <button
               onClick={() => sendMessage()}
               disabled={loading || !input.trim()}
-              className="bg-gradient-to-r from-indigo-600 to-purple-700
-              hover:from-indigo-500 hover:to-purple-600 disabled:opacity-50
-              rounded-2xl px-4 sm:px-5 py-2 sm:py-3 text-xs sm:text-sm
-              font-semibold transition-all duration-300 hover:scale-105 active:scale-95"
+              className="bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-500 hover:to-purple-600 disabled:opacity-50 rounded-2xl px-5 py-3 text-sm font-semibold transition-all duration-300 hover:scale-105"
             >
-              <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Send className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -225,23 +198,50 @@ Portfolio Sections:
       {/* Animations */}
       <style jsx>{`
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
         @keyframes slideUp {
-          from { opacity: 0; transform: translateY(20px) scale(0.95); }
-          to { opacity: 1; transform: translateY(0) scale(1); }
+          from {
+            opacity: 0;
+            transform: translateY(100%);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
         @keyframes slideDown {
-          from { opacity: 1; transform: translateY(0) scale(1); }
-          to { opacity: 0; transform: translateY(20px) scale(0.95); }
+          from {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          to {
+            opacity: 0;
+            transform: translateY(100%);
+          }
         }
-        .animate-fadeIn { animation: fadeIn 0.4s ease-out; }
-        .animate-slideUp { animation: slideUp 0.5s ease-out; }
-        .animate-slideDown { animation: slideDown 0.5s ease-out; }
-
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #1e1a78; border-radius: 10px; }
+        .animate-fadeIn {
+          animation: fadeIn 0.4s ease-out;
+        }
+        .animate-slideUp {
+          animation: slideUp 0.5s ease-out;
+        }
+        .animate-slideDown {
+          animation: slideDown 0.5s ease-out;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #1e1a78;
+        }
         .custom-scrollbar::-webkit-scrollbar-thumb {
           background: linear-gradient(to bottom, #6366f1, #a855f7, #ec4899);
           border-radius: 10px;
