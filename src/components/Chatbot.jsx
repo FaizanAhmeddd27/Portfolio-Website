@@ -36,15 +36,24 @@ If asked about Faizan, his work, skills, or projects — reply politely, confide
 Never say “I don’t understand.” If unclear, give a helpful response about Faizan or his portfolio.
 `;
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
-    const newMsg = { sender: "user", text: input };
+  // Predefined prompts
+  const predefinedPrompts = [
+    "Tell me about Faizan's skills",
+    "What projects has Faizan worked on?",
+    "How can I contact Faizan?",
+    "What is Faizan's experience as a MERN Stack Developer?",
+    "Tell me about Faizan's education",
+  ];
+
+  const sendMessage = async (prompt = input) => {
+    if (!prompt.trim()) return;
+    const newMsg = { sender: "user", text: prompt };
     setMessages([...messages, newMsg]);
     setInput("");
     setLoading(true);
 
     try {
-      const result = await model.generateContent(`${portfolioContext}\nUser: ${input}`);
+      const result = await model.generateContent(`${portfolioContext}\nUser: ${prompt}`);
       const reply = result.response.text();
       setMessages((prev) => [...prev, { sender: "bot", text: reply }]);
     } catch (err) {
@@ -58,6 +67,11 @@ Never say “I don’t understand.” If unclear, give a helpful response about 
     setLoading(false);
   };
 
+  const handlePromptClick = (prompt) => {
+    setInput(prompt);
+    sendMessage(prompt);
+  };
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -67,7 +81,7 @@ Never say “I don’t understand.” If unclear, give a helpful response about 
     setTimeout(() => {
       setOpen(false);
       setIsClosing(false);
-    }, 500); 
+    }, 500);
   };
 
   return (
@@ -75,15 +89,15 @@ Never say “I don’t understand.” If unclear, give a helpful response about 
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed right-4 top-4 sm:bottom-6 sm:top-auto sm:right-6
+          className="fixed right-16 top-4 sm:bottom-6 sm:top-auto sm:right-6
           bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-500 hover:to-purple-600
           text-white px-3 py-2 sm:px-5 sm:py-3 rounded-full shadow-lg
           flex items-center justify-center gap-2 transition-all duration-300
-          z-[1000] hover:scale-110 text-xs sm:text-sm font-semibold
+          z-[999] hover:scale-110 text-xs sm:text-sm font-semibold
           min-w-[2.5rem] min-h-[2.5rem] sm:min-w-[auto]"
         >
           <Send className="w-5 h-5 sm:w-6 sm:h-6" />
-          <span className="hidden sm:inline">Chat with AI</span>
+          <span className="hidden sm:inline">Chat with my AI Assitant</span>
         </button>
       )}
 
@@ -113,11 +127,29 @@ Never say “I don’t understand.” If unclear, give a helpful response about 
           <div className="flex-1 p-3 sm:p-4 overflow-y-auto space-y-3
           bg-[#0f172a]/40 backdrop-blur-md custom-scrollbar">
             {messages.length === 0 && (
-              <div className="text-gray-300 text-sm bg-[#1e1a78]/40
-              border border-indigo-600/30 rounded-2xl p-3 sm:p-4 animate-fadeIn">
-                👋 Hi! I'm Faizan’s AI assistant. Ask me about his skills,
-                experience, or projects!
-              </div>
+              <>
+                <div className="text-gray-300 text-sm bg-[#1e1a78]/40
+                border border-indigo-600/30 rounded-2xl p-3 sm:p-4 animate-fadeIn">
+                  👋 Hi! I'm Faizan’s AI assistant. Ask me about his skills,
+                  experience, or projects!
+                </div>
+                <div className="space-y-2">
+                  <p className="text-gray-400 text-xs sm:text-sm">Try these prompts:</p>
+                  <div className="grid grid-cols-1 gap-2">
+                    {predefinedPrompts.map((prompt, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handlePromptClick(prompt)}
+                        className="text-left text-gray-200 text-xs sm:text-sm bg-[#1e1a78]/60
+                        border border-indigo-600/30 rounded-lg p-2 hover:bg-indigo-600/80
+                        transition-all duration-200"
+                      >
+                        {prompt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
             )}
 
             {messages.map((msg, i) => (
@@ -164,7 +196,7 @@ Never say “I don’t understand.” If unclear, give a helpful response about 
               transition-all duration-300"
             />
             <button
-              onClick={sendMessage}
+              onClick={() => sendMessage()}
               disabled={loading || !input.trim()}
               className="bg-gradient-to-r from-indigo-600 to-purple-700
               hover:from-indigo-500 hover:to-purple-600 disabled:opacity-50
@@ -212,14 +244,14 @@ Never say “I don’t understand.” If unclear, give a helpful response about 
             right: 0;
             bottom: 0;
           }
-          .fixed.right-4.top-4 {
-            right: 4rem; /* Maintained position to the left */
+          .fixed.right-16.top-4 {
+            right: 4rem; /* Positioned to the left of hamburger menu */
             top: 1rem;
             padding: 0.75rem;
             min-width: 3rem;
             min-height: 3rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
+            z-index: 999;
           }
           .flex.items-center.justify-center.gap-2 {
             justify-content: center;
