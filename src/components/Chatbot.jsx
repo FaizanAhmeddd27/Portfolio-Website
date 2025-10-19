@@ -10,7 +10,10 @@ export default function ChatBot() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const API_KEY = "AIzaSyDnO3k0GrMIpAT84SG87PoaBHv33CZXNTk"; // your key
+  // 🔊 Audio reference
+  const audioRef = useRef(null);
+
+  const API_KEY = "AIzaSyDnO3k0GrMIpAT84SG87PoaBHv33CZXNTk"; 
   const genAI = new GoogleGenerativeAI(API_KEY);
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -31,12 +34,8 @@ Portfolio Sections:
   4. Inventory Management System (C++, QT, SQLite)
   5. Real Estate Website (React, Tailwind, Framer Motion)
 - Contact: faizannn27@gmail.com | 03122144331
-
-If asked about Faizan, his work, skills, or projects — reply politely, confidently, and contextually.
-Never say “I don’t understand.” If unclear, give a helpful response about Faizan or his portfolio.
 `;
 
-  // Predefined prompts
   const predefinedPrompts = [
     "Tell me about Faizan's skills",
     "What projects has Faizan worked on?",
@@ -45,12 +44,33 @@ Never say “I don’t understand.” If unclear, give a helpful response about 
     "Tell me about Faizan's education",
   ];
 
+  // 🔊 Unlock audio on first click (mobile fix)
+  useEffect(() => {
+    const unlockAudio = () => {
+      if (audioRef.current) {
+        audioRef.current.play().then(() => {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+        }).catch(() => {});
+      }
+      document.removeEventListener("click", unlockAudio);
+    };
+    document.addEventListener("click", unlockAudio);
+  }, []);
+
   const sendMessage = async (prompt = input) => {
     if (!prompt.trim()) return;
+
     const newMsg = { sender: "user", text: prompt };
-    setMessages([...messages, newMsg]);
+    setMessages((prev) => [...prev, newMsg]);
     setInput("");
     setLoading(true);
+
+    // 🔊 Play send sound
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {});
+    }
 
     try {
       const result = await model.generateContent(`${portfolioContext}\nUser: ${prompt}`);
@@ -86,36 +106,37 @@ Never say “I don’t understand.” If unclear, give a helpful response about 
 
   return (
     <>
+      {/* 🔊 Audio file */}
+      <audio ref={audioRef} src="/audio.wav" preload="auto" />
+
+      {/* 💬 Floating Chat Button */}
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed right-16 top-4 sm:bottom-6 sm:top-auto sm:right-6
+          className="fixed right-4 bottom-12 sm:right-6 sm:bottom-6
           bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-500 hover:to-purple-600
           text-white px-3 py-2 sm:px-5 sm:py-3 rounded-full shadow-lg
           flex items-center justify-center gap-2 transition-all duration-300
-          z-[999] hover:scale-110 text-xs sm:text-sm font-semibold
-          min-w-[2.5rem] min-h-[2.5rem] sm:min-w-[auto]"
+          z-[99999] hover:scale-110 text-xs sm:text-sm font-semibold"
         >
           <Send className="w-5 h-5 sm:w-6 sm:h-6" />
-          <span className="hidden sm:inline">Chat with my AI Assitant</span>
+          <span className="hidden sm:inline">Chat with my AI Assistant</span>
         </button>
       )}
 
+      {/* 💬 Chat Container */}
       {(open || isClosing) && (
         <div
-          className={`fixed inset-0 sm:bottom-6 sm:right-6 sm:top-auto sm:left-auto
-          w-full sm:w-[380px] md:w-[400px] h-full sm:h-[520px]
+          className={`fixed bottom-0 right-0 sm:bottom-6 sm:right-6 sm:top-auto sm:left-auto
+          w-full sm:w-[380px] md:w-[400px] h-[85%] sm:h-[520px]
           bg-gradient-to-b from-[#0f172a] via-[#1e1a78] to-[#2d1b69]
-          text-white rounded-none sm:rounded-2xl shadow-2xl
-          border border-indigo-700/40 z-[999] flex flex-col overflow-hidden
+          text-white rounded-t-2xl sm:rounded-2xl shadow-2xl
+          border border-indigo-700/40 z-[9999] flex flex-col overflow-hidden
           transition-all duration-500 ${isClosing ? 'animate-slideDown' : 'animate-slideUp'}`}
         >
-          <div className="flex justify-between items-center
-          bg-gradient-to-r from-indigo-700 to-purple-700
-          px-4 py-3 sm:px-5 sm:py-4">
-            <h2 className="font-semibold text-base sm:text-lg">
-              Faizan’s AI Chatbot
-            </h2>
+          {/* Header */}
+          <div className="flex justify-between items-center bg-gradient-to-r from-indigo-700 to-purple-700 px-4 py-3 sm:px-5 sm:py-4">
+            <h2 className="font-semibold text-base sm:text-lg">Faizan’s AI Chatbot</h2>
             <button
               onClick={handleClose}
               className="text-gray-300 hover:text-white text-lg sm:text-xl transition-all"
@@ -124,12 +145,11 @@ Never say “I don’t understand.” If unclear, give a helpful response about 
             </button>
           </div>
 
-          <div className="flex-1 p-3 sm:p-4 overflow-y-auto space-y-3
-          bg-[#0f172a]/40 backdrop-blur-md custom-scrollbar">
+          {/* Chat Messages */}
+          <div className="flex-1 p-3 sm:p-4 overflow-y-auto space-y-3 bg-[#0f172a]/40 backdrop-blur-md custom-scrollbar">
             {messages.length === 0 && (
               <>
-                <div className="text-gray-300 text-sm bg-[#1e1a78]/40
-                border border-indigo-600/30 rounded-2xl p-3 sm:p-4 animate-fadeIn">
+                <div className="text-gray-300 text-sm bg-[#1e1a78]/40 border border-indigo-600/30 rounded-2xl p-3 sm:p-4 animate-fadeIn">
                   👋 Hi! I'm Faizan’s AI assistant. Ask me about his skills,
                   experience, or projects!
                 </div>
@@ -155,9 +175,7 @@ Never say “I don’t understand.” If unclear, give a helpful response about 
             {messages.map((msg, i) => (
               <div
                 key={i}
-                className={`flex ${
-                  msg.sender === "user" ? "justify-end" : "justify-start"
-                } animate-fadeIn`}
+                className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"} animate-fadeIn`}
               >
                 <div
                   className={`max-w-[80%] sm:max-w-[75%] p-2.5 sm:p-3 rounded-2xl text-xs sm:text-sm ${
@@ -172,18 +190,14 @@ Never say “I don’t understand.” If unclear, give a helpful response about 
             ))}
 
             {loading && (
-              <div className="text-gray-400 text-sm animate-pulse">
-                Thinking...
-              </div>
+              <div className="text-gray-400 text-sm animate-pulse">Thinking...</div>
             )}
 
             <div ref={messagesEndRef} />
           </div>
 
-          <div
-            className="p-3 sm:p-4 flex gap-2 border-t border-indigo-800
-            bg-[#0f172a]/90 backdrop-blur-md"
-          >
+          {/* Input Box */}
+          <div className="p-3 sm:p-4 flex gap-2 border-t border-indigo-800 bg-[#0f172a]/90 backdrop-blur-md">
             <input
               type="text"
               value={input}
@@ -192,8 +206,7 @@ Never say “I don’t understand.” If unclear, give a helpful response about 
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
               className="flex-1 bg-[#1e1a78]/50 p-2.5 sm:p-3 rounded-2xl
               outline-none text-white text-xs sm:text-sm placeholder-gray-400
-              border border-indigo-700 focus:border-purple-500
-              transition-all duration-300"
+              border border-indigo-700 focus:border-purple-500 transition-all duration-300"
             />
             <button
               onClick={() => sendMessage()}
@@ -209,6 +222,7 @@ Never say “I don’t understand.” If unclear, give a helpful response about 
         </div>
       )}
 
+      {/* Animations */}
       <style jsx>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
@@ -226,43 +240,11 @@ Never say “I don’t understand.” If unclear, give a helpful response about 
         .animate-slideUp { animation: slideUp 0.5s ease-out; }
         .animate-slideDown { animation: slideDown 0.5s ease-out; }
 
-        /* Scrollbar Styling */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #1e1a78; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb {
           background: linear-gradient(to bottom, #6366f1, #a855f7, #ec4899);
           border-radius: 10px;
-        }
-
-        /* Mobile-specific adjustments */
-        @media (max-width: 640px) {
-          .fixed.inset-0 {
-            width: 100vw;
-            height: 100vh;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-          }
-          .fixed.right-16.top-4 {
-            right: 4rem; /* Positioned to the left of hamburger menu */
-            top: 1rem;
-            padding: 0.75rem;
-            min-width: 3rem;
-            min-height: 3rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 999;
-          }
-          .flex.items-center.justify-center.gap-2 {
-            justify-content: center;
-            align-items: center;
-          }
-          .text-xs.sm\\:text-sm {
-            font-size: 0.75rem;
-          }
-          .min-w-\\[2\\.5rem\\].sm\\:min-w-\\[auto\\] {
-            min-width: 3rem;
-          }
         }
       `}</style>
     </>
