@@ -114,13 +114,14 @@ He is studying BS Computer Science at NED University (2024–2028).
       {/* Chat Container */}
       {(open || isClosing) && (
         <div
-          className={`fixed left-0 bottom-0 sm:right-6 sm:left-auto sm:bottom-10 
-          w-full top-0 md:top-8  sm:w-[380px] md:w-[420px] h-[100vh] sm:h-[550px]
-          bg-gradient-to-b from-[#0f172a] via-[#1e1a78] to-[#2d1b69]
-          text-white rounded-t-2xl sm:rounded-2xl shadow-2xl border border-indigo-700/40
-          flex flex-col overflow-hidden z-[99999] transition-all duration-500
-          ${isClosing ? "animate-slideDown" : "animate-slideUp"}`}
-        >
+  className={`fixed left-0 bottom-0 sm:right-6 sm:left-auto sm:bottom-10 
+  w-full sm:w-[380px] md:w-[420px] h-[75vh] sm:h-[550px]
+  bg-gradient-to-b from-[#0f172a] via-[#1e1a78] to-[#2d1b69]
+  text-white rounded-t-2xl   sm:rounded-2xl shadow-2xl border border-indigo-700/40
+  flex flex-col overflow-hidden z-[99999] transition-all duration-500
+  ${isClosing ? "animate-slideDown" : "animate-slideUp"}`}
+>
+
           {/* Header */}
           <div className="flex justify-between items-center bg-gradient-to-r from-indigo-700 to-purple-700 px-4 py-3">
             <h2 className="font-semibold text-base sm:text-lg">Faizan’s AI Chatbot</h2>
